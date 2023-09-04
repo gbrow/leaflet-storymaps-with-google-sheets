@@ -284,7 +284,7 @@ $(window).on('load', function() {
       pixelsAbove[i] = pixelsAbove[i-1] + $('div#container' + (i-1)).height() + chapterContainerMargin;
     }
     pixelsAbove.push(Number.MAX_VALUE);
-
+    
     $('div#contents').scroll(function() {
       var currentPosition = $(this).scrollTop();
 
@@ -292,7 +292,7 @@ $(window).on('load', function() {
       if (currentPosition < 200) {
         $('#title').css('opacity', 1 - Math.min(1, currentPosition / 100));
       }
-
+      
       for (var i = 0; i < pixelsAbove.length - 1; i++) {
 
         if ( currentPosition >= pixelsAbove[i]
@@ -350,6 +350,22 @@ $(window).on('load', function() {
           }
 
           if (c['GeoJSON Overlay']) {
+
+            function createCustomIcon (feature, latlng) {
+              let myIcon = L.icon({
+                iconUrl: 'my-icon.png',
+                shadowUrl: 'my-icon.png',
+                iconSize:     [25, 25], // width and height of the image in pixels
+                shadowSize:   [35, 20], // width, height of optional shadow image
+                iconAnchor:   [12, 12], // point of the icon which will correspond to marker's location
+                shadowAnchor: [12, 6],  // anchor point of the shadow. should be offset
+                popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+              })
+              return L.marker(latlng, { icon: myIcon })
+            }
+            let myLayerOptions = {
+              pointToLayer: createCustomIcon
+            }
             $.getJSON(c['GeoJSON Overlay'], function(geojson) {
 
               // Parse properties string into a JS object
@@ -365,17 +381,7 @@ $(window).on('load', function() {
                 }
               }
 
-              geoJsonOverlay = L.geoJson(geojson, {
-                style: function(feature) {
-                  return {
-                    fillColor: feature.properties.fillColor || props.fillColor || '#ffffff',
-                    weight: feature.properties.weight || props.weight || 1,
-                    opacity: feature.properties.opacity || props.opacity || 0.5,
-                    color: feature.properties.color || props.color || '#cccccc',
-                    fillOpacity: feature.properties.fillOpacity || props.fillOpacity || 0.5,
-                  }
-                }
-              }).addTo(map);
+              geoJsonOverlay = L.geoJson(geojson, myLayerOptions).addTo(map);
             });
           }
 
