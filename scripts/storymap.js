@@ -150,16 +150,23 @@ $(window).on('load', function() {
         chapterCount += 1;
 
         markers.push(
-          L.marker([lat, lon], {
-            icon: L.ExtraMarkers.icon({
-              icon: 'fa-number',
-              number: c['Marker'] === 'Numbered'
-                ? chapterCount
-                : (c['Marker'] === 'Plain'
-                  ? ''
-                  : c['Marker']), 
-              markerColor: c['Marker Color'] || 'blue'
-            }),
+         L.marker([lat, lon], {
+            icon: c['Marker'] === 'Image' 
+            ? 
+            L.icon({
+              iconUrl: c['Marker Image'],
+              iconSize:     [50, 50]
+            })            
+            : 
+              L.ExtraMarkers.icon({
+                icon: 'fa-number',
+                number: c['Marker'] === 'Numbered'
+                  ? chapterCount
+                  : (c['Marker'] === 'Plain'
+                    ? ''
+                    : c['Marker']), 
+                markerColor: c['Marker Color'] || 'blue'
+              }),
             opacity: c['Marker'] === 'Hidden' ? 0 : 0.9,
             interactive: c['Marker'] === 'Hidden' ? false : true,
           }
