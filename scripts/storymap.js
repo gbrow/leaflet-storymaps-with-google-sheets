@@ -350,24 +350,25 @@ $(window).on('load', function() {
           }
 
           if (c['GeoJSON Overlay']) {
-
-            function createCustomIcon (feature, latlng) {
-              let myIcon = L.icon({
-                iconUrl: c['Marker Image'],
-                //shadowUrl: c['Marker Image'],
-                iconSize:     [25, 25], // width and height of the image in pixels
-                //shadowSize:   [35, 20], // width, height of optional shadow image
-                iconAnchor:   [12, 12] //, // point of the icon which will correspond to marker's location
-                //shadowAnchor: [12, 6],  // anchor point of the shadow. should be offset
-                //popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
-              })
-              return L.marker(latlng, { icon: myIcon })
-            }
-            let myLayerOptions = {
-              pointToLayer: createCustomIcon
-            }
             $.getJSON(c['GeoJSON Overlay'], function(geojson) {
-
+              if (c['Marker Image']) {
+                function createCustomIcon (feature, latlng) {
+                  let myIcon = L.icon({
+                    iconUrl: c['Marker Image'],
+                    //shadowUrl: c['Marker Image'],
+                    iconSize:     [25, 25], // width and height of the image in pixels
+                    //shadowSize:   [35, 20], // width, height of optional shadow image
+                    iconAnchor:   [12, 12] //, // point of the icon which will correspond to marker's location
+                    //shadowAnchor: [12, 6],  // anchor point of the shadow. should be offset
+                    //popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+                  })
+                  return L.marker(latlng, { icon: myIcon })
+                }
+                let myLayerOptions = {
+                  pointToLayer: createCustomIcon
+                }
+                geoJsonOverlay = L.geoJson(geojson, myLayerOptions).addTo(map);
+              } else {
               // Parse properties string into a JS object
               var props = {};
 
@@ -381,7 +382,18 @@ $(window).on('load', function() {
                 }
               }
 
-              geoJsonOverlay = L.geoJson(geojson, myLayerOptions).addTo(map);
+              geoJsonOverlay = L.geoJson(geojson, {
+                style: function(feature) {
+                  return {
+                    fillColor: feature.properties.fillColor || props.fillColor || '#ffffff',
+                    weight: feature.properties.weight || props.weight || 1,
+                    opacity: feature.properties.opacity || props.opacity || 0.5,
+                    color: feature.properties.color || props.color || '#cccccc',
+                    fillOpacity: feature.properties.fillOpacity || props.fillOpacity || 0.5,
+                  }
+                }
+              }).addTo(map);
+              }
             });
           }
 
