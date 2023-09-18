@@ -139,6 +139,7 @@ $(window).on('load', function() {
     var currentlyInFocus; // integer to specify each chapter is currently in focus
     var overlay;  // URL of the overlay for in-focus chapter
     var geoJsonOverlay;
+    var geoJsonOverlay2;
 
     for (i in chapters) {
       var c = chapters[i];
@@ -320,6 +321,9 @@ $(window).on('load', function() {
           if (map.hasLayer(geoJsonOverlay)) {
             map.removeLayer(geoJsonOverlay);
           }
+          if (map.hasLayer(geoJsonOverlay2)) {
+            map.removeLayer(geoJsonOverlay2);
+          }
 
           var c = chapters[i];
 
@@ -394,6 +398,40 @@ $(window).on('load', function() {
                 }
               }).addTo(map);
               }
+            });
+          }
+        //
+        //
+        // Segundo layer de geosjon
+        //
+        // 
+          if (c['GeoJSON Overlay 2']) {            
+            $.getJSON(c['GeoJSON Overlay 2'], function(geojson) {
+
+              // Parse properties string into a JS object
+              var props = {};
+
+              if (c['GeoJSON Feature Properties 2']) {
+                var propsArray = c['GeoJSON Feature Properties 2'].split(';');
+                var props = {};
+                for (var p in propsArray) {
+                  if (propsArray[p].split(':').length === 2) {
+                    props[ propsArray[p].split(':')[0].trim() ] = propsArray[p].split(':')[1].trim();
+                  }
+                }
+              }
+
+              geoJsonOverlay2 = L.geoJson(geojson, {
+                style: function(feature) {
+                  return {
+                    fillColor: feature.properties.fillColor || props.fillColor || '#ffffff',
+                    weight: feature.properties.weight || props.weight || 1,
+                    opacity: feature.properties.opacity || props.opacity || 0.5,
+                    color: feature.properties.color || props.color || '#cccccc',
+                    fillOpacity: feature.properties.fillOpacity || props.fillOpacity || 0.5,
+                  }
+                }
+              }).addTo(map);
             });
           }
 
