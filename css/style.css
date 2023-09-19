@@ -98,6 +98,7 @@ body {
 .chapter-header {
   display: block;
   text-align: center;
+  font-family: "Bebas Neue";
   font-size: 1.2em;
   padding: 0 5px;
 }
